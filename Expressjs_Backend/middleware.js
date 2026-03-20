@@ -57,3 +57,22 @@ app.get("/students",authMiddleWare, async (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+app.get('/students', (req, res) => {
+    const filePath = path.join(__dirname, 'student.json');
+    const { branch } = req.query;
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        let students = [];
+        if (!err && data) {
+            students = JSON.parse(data);
+        }
+        if (branch) {
+            students = students.filter(s => s.branch === branch);
+        }
+        res.render('student', {
+            students,
+            total: students.length,
+            selectedBranch: branch || ''
+        });
+    }
+    );
+});
